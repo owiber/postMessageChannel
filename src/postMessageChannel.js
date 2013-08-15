@@ -18,7 +18,7 @@
     var options = opts || {};
     var dfds = [];
     var methods = options.methods || {};
-    var readyDfd = Deferred();
+    var readyDfd;
 
     if ( !(options.scope && options.origin && options.window) ) {
       throw new Error('scope, origin, and window options are required');
@@ -56,6 +56,7 @@
         internalMethods[message.method](message);
       }
       else if (message.dfdId !== undefined && message.method && message.scope === scope && methods[message.method]) {
+        console.log(message.method);
         var isAsync = false;
         var done = function (data) {
           sendMessage(callbackMethod, data, message.dfdId);
@@ -74,10 +75,16 @@
       }
     });
 
-    this.promise = readyDfd.promise;
+    this.reset = function () {
+      readyDfd = Deferred();
+      readyDfd.promise.then(function () {
+        // Send back to frame that said it was ready that we're also ready
+        sendMessage(readyMethod);
+      });
+    }
 
     this.ready = function (fn) {
-      this.promise.then(fn);
+      readyDfd.promise.then(fn);
     }
 
     this.addMethod = function (method, fn) {
@@ -92,10 +99,13 @@
       var dfdId = dfds.length;
       var dfd = Deferred();
       dfds.push(dfd);
-      sendMessage(method, data, dfdId);
+      this.ready(function () {
+        sendMessage(method, data, dfdId);
+      });
       return dfd.promise;
     };
-
+    this.reset();
+    // Broadcast that we're ready
     sendMessage(readyMethod);
   };
 
