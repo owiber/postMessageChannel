@@ -3,7 +3,7 @@ postMessageChannel
 
 Cross-domain channel communication. Provides similar functionality to [pmrpc](https://github.com/izuzak/pmrpc) and [jschannel](https://github.com/mozilla/jschannel) but with an alternative API.
 
-postMessageChannel allows you to setup a channel between two frames. You may then send data to functions of the other frame and receive data back. A scape is defined for a channel so that multiple channels may exist on a page and not conflict.
+postMessageChannel allows you to setup a channel between two frames. You may then send data to functions of the other frame and receive data back. A scope is defined for a channel so that multiple channels may exist on a page and not conflict.
 
 ## Examples
 
