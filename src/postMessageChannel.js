@@ -56,7 +56,6 @@
         internalMethods[message.method](message);
       }
       else if (message.dfdId !== undefined && message.method && message.scope === scope && methods[message.method]) {
-        console.log(message.method);
         var isAsync = false;
         var done = function (data) {
           sendMessage(callbackMethod, data, message.dfdId);
