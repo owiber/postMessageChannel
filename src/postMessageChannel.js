@@ -48,6 +48,9 @@
     }
 
     window.addEventListener('message', function (event) {
+      if (event.origin !== origin) {
+        return;
+      }
       var message = event.data || {};
       if (message.method && message.scope === scope && internalMethods[message.method]) {
         internalMethods[message.method](message);
@@ -66,7 +69,7 @@
 
         var result = methods[message.method].call(context, message.data);
         if (!isAsync) {
-          done(result);
+          done(result === context ? undefined : result);
         }
       }
     });
@@ -97,7 +100,7 @@
   };
 
   if (typeof define === 'function' && define.amd) {
-    define([], function () { return postMessageChannel; });
+    define('postmessagechannel', [], function () { return postMessageChannel; });
   } else {
     exports.postMessageChannel = postMessageChannel;
   }

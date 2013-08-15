@@ -1,0 +1,23 @@
+{
+  "name": "postmessagechannel",
+  "version": "0.0.0",
+  "description": "Cross-domain channel communication. Alternative to pmrpc and jschannel.",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/owiber/postMessageChannel.git"
+  },
+  "author": "Oliver Wong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/owiber/postMessageChannel/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1"
+  }
+}
