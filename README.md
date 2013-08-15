@@ -3,6 +3,8 @@ postMessageChannel
 
 Cross-domain channel communication. Provides similar functionality to [pmrpc](https://github.com/izuzak/pmrpc) and [jschannel](https://github.com/mozilla/jschannel) but with an alternative API.
 
+postMessageChannel allows you to setup a channel between two frames. You may then send data to functions of the other frame and receive data back. A scape is defined for a channel so that multiple channels may exist on a page and not conflict.
+
 ## Examples
 
 ### parent.html
@@ -25,7 +27,10 @@ Cross-domain channel communication. Provides similar functionality to [pmrpc](ht
           scope: 'myScope'
         });
 
-        pmc.run('hello', { subject: 'world' }).then(function (data) {
+        var result = pmc.run('hello', { subject: 'world' });
+        
+        // .run() returns a promise we can use to receive data back from the other frame
+        result.then(function (data) {
           console.log('Got back', data);
         });
       }());
@@ -68,7 +73,7 @@ Cross-domain channel communication. Provides similar functionality to [pmrpc](ht
 
 ### Timeouts
 
-If you want requests to timeout:
+If you want requests to timeout, pass a third parameter to `run()`:
 
 ```javascript
 pmc.run('dummy', null, 1000).then(
@@ -82,6 +87,8 @@ pmc.run('dummy', null, 1000).then(
 ```
 
 ### Async Methods
+
+Methods may be asynchronous. Use `this.async();` and then call the returned function when finished.
 
 ```javascript
 var pmc = postMessageChannel({
