@@ -88,7 +88,7 @@ pmc.run('dummy', null, 1000).then(
 
 ### Async Methods
 
-Methods may be asynchronous. Use `this.async();` and then call the returned function when finished.
+Methods may be asynchronous. Use `this.async()`, then call the returned function when finished.
 
 ```javascript
 var pmc = postMessageChannel({
