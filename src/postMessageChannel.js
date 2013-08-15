@@ -48,14 +48,14 @@
     }
 
     window.addEventListener('message', function (event) {
-      if (event.origin !== origin) {
+      var message = event.data || {};
+      if (event.origin !== origin || message.scope !== scope || !message.method) {
         return;
       }
-      var message = event.data || {};
-      if (message.method && message.scope === scope && internalMethods[message.method]) {
+      if (internalMethods[message.method]) {
         internalMethods[message.method](message);
       }
-      else if (message.dfdId !== undefined && message.method && message.scope === scope && methods[message.method]) {
+      else if (message.dfdId !== undefined && methods[message.method]) {
         var isAsync = false;
         var done = function (data) {
           sendMessage(callbackMethod, data, message.dfdId);
@@ -69,6 +69,8 @@
 
         var result = methods[message.method].call(context, message.data);
         if (!isAsync) {
+          // For methods that just return this, detect that and return undefined instead
+          // because functions (such as async, above) can't be passed via postMessage.
           done(result === context ? undefined : result);
         }
       }
