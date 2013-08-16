@@ -22,11 +22,11 @@
     var methods = options.methods || {};
     var readyDfd;
 
-    if ( !(options.scope && options.origin && options.target) ) {
-      throw new Error('scope, origin, and target options are required');
+    if ( !(options.id && options.origin && options.target) ) {
+      throw new Error('id, origin, and target options are required');
     }
 
-    var scope = options.scope;
+    var scope = options.id;
     var origin = options.origin;
     var targetWindow = options.target;
     var internalMethods = {};

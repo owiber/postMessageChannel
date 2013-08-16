@@ -3,7 +3,7 @@ postMessageChannel
 
 Cross-domain channel communication. Provides similar functionality to [pmrpc](https://github.com/izuzak/pmrpc) and [jschannel](https://github.com/mozilla/jschannel) but with an alternative API.
 
-postMessageChannel allows you to setup a channel between two frames. You may then send data to functions of the other frame and receive data back. A scope is defined for a channel so that multiple channels may exist on a page and not conflict.
+postMessageChannel allows you to setup a channel between two frames. You may then send data to functions of the other frame and receive data back. An ID is defined for a channel so that multiple channels may exist on a page and not conflict.
 
 ## Examples
 
@@ -22,9 +22,9 @@ postMessageChannel allows you to setup a channel between two frames. You may the
     <script type="text/javascript">
       (function () {
         var pmc = postMessageChannel({
-          window: document.getElementById('childFrame').contentWindow,
+          target: document.getElementById('childFrame').contentWindow,
           origin: window.location.origin,
-          scope: 'myScope'
+          id: 'myScope'
         });
 
         var result = pmc.run('hello', { subject: 'world' });
@@ -54,9 +54,9 @@ postMessageChannel allows you to setup a channel between two frames. You may the
     <script type="text/javascript">
       (function () {
         var pmc = postMessageChannel({
-          window: parent,
+          target: parent,
           origin: window.location.origin,
-          scope: 'myScope',
+          id: 'myScope',
           methods: {
             hello: function (data) {
               data = data || {};
@@ -92,9 +92,9 @@ Methods may be asynchronous. Use `this.async()`, then `resolve()` or `reject()` 
 
 ```javascript
 var pmc = postMessageChannel({
-  window: parent,
+  target: parent,
   origin: window.location.origin,
-  scope: 'myScope',
+  id: 'myScope',
   methods: {
     asyncFn: function (data) {
       var dfd = this.async();

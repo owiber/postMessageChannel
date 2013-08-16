@@ -12,7 +12,7 @@
         var pmc = postMessageChannel({
           target: parent,
           origin: window.location.origin,
-          scope: 'myScope',
+          id: 'myScope',
           methods: {
             hello: function (data) {
               data = data || {};
