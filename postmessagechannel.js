@@ -22,13 +22,13 @@
     var methods = options.methods || {};
     var readyDfd;
 
-    if ( !(options.scope && options.origin && options.window) ) {
-      throw new Error('scope, origin, and window options are required');
+    if ( !(options.scope && options.origin && options.target) ) {
+      throw new Error('scope, origin, and target options are required');
     }
 
     var scope = options.scope;
     var origin = options.origin;
-    var targetWindow = options.window;
+    var targetWindow = options.target;
     var internalMethods = {};
     internalMethods[readyMethod] = function (message) {
       readyDfd.resolve(message.data);

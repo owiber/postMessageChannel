@@ -20,7 +20,7 @@
       describe("postMessageChannel", function() {
         before(function () {
           pmc = postMessageChannel({
-            window: document.getElementById('childFrame').contentWindow,
+            target: document.getElementById('childFrame').contentWindow,
             origin: window.location.origin,
             scope: 'myScope'
           });

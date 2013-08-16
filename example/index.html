@@ -10,7 +10,7 @@
     <script type="text/javascript">
       (function () {
         var pmc = postMessageChannel({
-          window: document.getElementById('childFrame').contentWindow,
+          target: document.getElementById('childFrame').contentWindow,
           origin: window.location.origin,
           scope: 'myScope'
         });
