@@ -6,31 +6,27 @@
     <script src="../postMessageChannel.js" type="text/javascript"></script>
   </head>
   <body>
-  	<iframe id="childFrame" src="child.html"></iframe>
-  	<button id="sendButton" onclick="return sendClick();">Send</button>
-  	<script type="text/javascript">
-  		(function () {
-  			var pmc = postMessageChannel({
-  				window: document.getElementById('childFrame').contentWindow,
-  				origin: window.location.origin,
-  				scope: 'myScope'
-  			});
+    <iframe id="childFrame" src="child.html"></iframe>
+    <script type="text/javascript">
+      (function () {
+        var pmc = postMessageChannel({
+          window: document.getElementById('childFrame').contentWindow,
+          origin: window.location.origin,
+          scope: 'myScope'
+        });
 
-  			window.sendClick = function () {
-  				var req = pmc.run('hello', { subject: 'world' });
-	  			req.then(function (data) {
-	  				console.log('Got back', data);
-	  			});
+        var req = pmc.run('hello', { subject: 'world' });
+        req.then(function (data) {
+          console.log('Got back', data);
+        });
 
-          pmc.run('dummy', null, 1000).then(function () {
-            console.log('success'); // This won't run.
-          }, function () {
-            console.log('This timed out! (Expected)');
-          });
-  				return false;
-  			};
+        pmc.run('dummy', null, 1000).then(function success () {
+          console.log('success'); // This won't run.
+        }, function failure () {
+          console.log('This timed out! (Expected)');
+        });
 
-  		}());
-  	</script>
+      }());
+    </script>
   </body>
 </html>

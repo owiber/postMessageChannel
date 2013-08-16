@@ -40,12 +40,13 @@
       }
     };
 
-    function sendMessage (method, data, dfdId) {
+    function sendMessage (method, data, dfdId, state) {
       targetWindow.postMessage({
         scope: scope,
         dfdId: dfdId,
         data: data,
-        method: method
+        method: method,
+        state: state
       }, origin);
     }
 
@@ -58,19 +59,26 @@
         internalMethods[message.method](message);
       }
       else if (message.dfdId !== undefined && methods[message.method]) {
-        var isAsync = false;
-        var done = function (data) {
-          sendMessage(callbackMethod, data, message.dfdId);
+        var asyncDfd;
+        var done = function (data, state) {
+          sendMessage(callbackMethod, data, message.dfdId, state);
         };
         var context = {
           async: function () {
-            isAsync = true;
-            return done;
+            asyncDfd = Deferred();
+            return asyncDfd;
           }
         };
 
         var result = methods[message.method].call(context, message.data);
-        if (!isAsync) {
+        if (asyncDfd) {
+          asyncDfd.promise.then(
+            done,
+            function fail (d) {
+              done(d, 'reject');
+            }
+          );
+        } else {
           // For methods that just return this, detect that and return undefined instead
           // because functions (such as async, above) can't be passed via postMessage.
           done(result === context ? undefined : result);

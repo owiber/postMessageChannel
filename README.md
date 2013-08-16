@@ -28,7 +28,7 @@ postMessageChannel allows you to setup a channel between two frames. You may the
         });
 
         var result = pmc.run('hello', { subject: 'world' });
-        
+
         // .run() returns a promise we can use to receive data back from the other frame
         result.then(function (data) {
           console.log('Got back', data);
@@ -79,7 +79,7 @@ If you want requests to timeout, pass a third parameter to `run()`:
 pmc.run('dummy', null, 1000).then(
   function success () {
     console.log('success'); // This won't run.
-  }, 
+  },
   function failure () {
     console.log('This timed out! (Expected)');
   }
@@ -88,7 +88,7 @@ pmc.run('dummy', null, 1000).then(
 
 ### Async Methods
 
-Methods may be asynchronous. Use `this.async()`, then call the returned function when finished.
+Methods may be asynchronous. Use `this.async()`, then `resolve()` or `reject()` the returned deferred object.
 
 ```javascript
 var pmc = postMessageChannel({
@@ -97,9 +97,9 @@ var pmc = postMessageChannel({
   scope: 'myScope',
   methods: {
     asyncFn: function (data) {
-      var done = this.async();
+      var dfd = this.async();
       window.setTimeout(function () {
-        done('result');
+        dfd.resolve('result');
       }, 1000);
     }
   }

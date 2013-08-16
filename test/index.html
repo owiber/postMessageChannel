@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+</head>
+<body>
+  <div id="mocha"></div>
+  <iframe id="childFrame" src="child.html" style="width: 1px; height: 1px; position: absolute; top: -1000px; left: -1000px;"></iframe>
+  <script src="../node_modules/chai/chai.js"></script>
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script src="../postMessageChannel.js" type="text/javascript"></script>
+  <script>mocha.setup('bdd')</script>
+  <script>
+    (function () {
+      var pmc;
+      chai.should();
+
+      describe("postMessageChannel", function() {
+        before(function () {
+          pmc = postMessageChannel({
+            window: document.getElementById('childFrame').contentWindow,
+            origin: window.location.origin,
+            scope: 'myScope'
+          });
+        });
+
+        it('should send and receive data', function (done) {
+          pmc
+            .run('hello', { subject: 'world' })
+            .then(function (data) {
+              data.should.equal('hello, world!');
+              done();
+            });
+        });
+
+        it('should support async functions', function (done) {
+          pmc
+            .run('asyncHello')
+            .then(function (data) {
+              data.should.equal('hello!');
+              done();
+            });
+        });
+
+        it('should support async functions rejecting the deferred', function (done) {
+          pmc
+            .run('asyncFailure')
+            .then(
+              function () {},
+              function (d) {
+                d.should.equal('good bye :(');
+                done();
+              }
+            );
+        });
+
+        it('should support a programatically added method in the child', function (done) {
+          pmc
+            .run('newMethod')
+            .then(function (d) {
+              d.should.equal('New Method!');
+              done();
+            });
+        });
+
+        it('should support timed out functions', function (done) {
+          pmc
+            .run('doesNotExist', null, 100)
+            .then(function () {}, done);
+        });
+
+      });
+
+      mocha.checkLeaks();
+      // mocha.globals(['jQuery']);
+      mocha.run();
+    }());
+  </script>
+</body>
+</html>

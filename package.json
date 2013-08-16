@@ -18,6 +18,8 @@
     "url": "https://github.com/owiber/postMessageChannel/issues"
   },
   "devDependencies": {
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+    "mocha": "~1.12.0",
+    "chai": "~1.7.2"
   }
 }
