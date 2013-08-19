@@ -119,6 +119,9 @@
     sendMessage(readyMethod);
   };
 
+  // Allow our utils to get used by others
+  postMessageChannel.utils = utils;
+
   if (typeof define === 'function' && define.amd) {
     define('postmessagechannel', [], function () { return postMessageChannel; });
   } else {
