@@ -115,9 +115,13 @@
       return dfd.promise;
     };
     this.reset();
-    // Broadcast that we're ready
-    sendMessage(readyMethod);
+    // Broadcast that we're ready if we're a child frame
+    if (window.self !== window.top) {
+      sendMessage(readyMethod);
+    }
   };
+
+  postMessageChannel.utils = utils;
 
   if (typeof define === 'function' && define.amd) {
     define(function () { return postMessageChannel; });
