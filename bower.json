@@ -1,0 +1,17 @@
+{
+  "name": "postMessageChannel",
+  "main": "postmessagechannel.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/owiber/postMessageChannel",
+  "authors": [
+    "Oliver Wong <oliver@owiber.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

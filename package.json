@@ -5,6 +5,7 @@
   "directories": {
     "example": "example"
   },
+  "main": "./postmessagechannel.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
