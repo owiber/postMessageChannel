@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "0.10"
+before_script:
+	- node server.js &
+script:
+	- node_modules/mocha-phantomjs/bin/mocha-phantomjs http://localhost:8080/test/index.html
