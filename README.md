@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/owiber/postMessageChannel.png)](https://travis-ci.org/owiber/postMessageChannel)
+
+
 postMessageChannel
 ==================
 
