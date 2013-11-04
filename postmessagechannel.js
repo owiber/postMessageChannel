@@ -50,7 +50,7 @@
       }, origin);
     }
 
-    function messageListener (event) {
+    (window.addEventListener || window.attachEvent)('message', function (event) {
       var message = event.data || {};
       if (event.origin !== origin || message.scope !== scope || !message.method) {
         return;
@@ -84,13 +84,7 @@
           done(result === context ? undefined : result);
         }
       }
-    }
-
-    if (window.addEventListener) {
-      window.addEventListener('message', messageListener);
-    } else {
-      window.attachEvent('message', messageListener);
-    }
+    });
 
     this.reset = function () {
       readyDfd = Deferred();
