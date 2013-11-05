@@ -32,7 +32,7 @@ postMessageChannel allows you to setup a channel between two frames. You may the
 
         var result = pmc.run('hello', { subject: 'world' });
 
-        // .run() returns a promise we can use to receive data back from the other frame
+        // run() returns a promise we can use to receive data back from the other frame
         result.then(function (data) {
           console.log('Got back', data);
         });
