@@ -170,17 +170,21 @@
     };
 
     function sendMessage (method, data, dfdId, state) {
-      targetWindow.postMessage({
+      var messageData = {
         scope: scope,
         dfdId: dfdId,
         data: data,
         method: method,
         state: state
-      }, origin);
+      };
+      targetWindow.postMessage(JSON.stringify(messageData), origin);
     }
 
     (window.addEventListener || window.attachEvent)('message', function (event) {
-      var message = event.data || {};
+      var message = {};
+      try {
+        message = JSON.parse(event.data);
+      } catch (e) {}
       if (event.origin !== origin || message.scope !== scope || !message.method) {
         return;
       }
@@ -221,7 +225,7 @@
         // Send back to frame that said it was ready that we're also ready
         sendMessage(readyMethod);
       });
-    }
+    };
 
     this.addMethod = function (method, fn) {
       methods[method] = fn;
