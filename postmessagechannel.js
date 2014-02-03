@@ -184,7 +184,9 @@
       var message = {};
       try {
         message = JSON.parse(event.data);
-      } catch (e) {}
+      } catch (e) {
+        message = event.data || {};
+      }
       if (event.origin !== origin || message.scope !== scope || !message.method) {
         return;
       }
