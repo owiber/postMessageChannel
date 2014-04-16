@@ -11,18 +11,22 @@
   <script src="../node_modules/mocha/mocha.js" type="text/javascript"></script>
   <script src="../postmessagechannel.js" type="text/javascript"></script>
   <script>mocha.setup('bdd')</script>
+  <iframe id="childFrame" src="about:blank" style="width: 1px; height: 1px; position: absolute; top: -1000px; left: -1000px;"></iframe>
+  <iframe id="childFrame2" src="about:blank" style="width: 1px; height: 1px; position: absolute; top: -1000px; left: -1000px;"></iframe>
   <script>
     (function () {
       var pmc;
       chai.should();
 
-      describe("postMessageChannel", function() {
+      describe("Good postMessageChannel", function() {
         before(function () {
+          var frame = document.getElementById('childFrame');
           pmc = postMessageChannel({
-            target: document.getElementById('childFrame').contentWindow,
+            target: frame.contentWindow,
             origin: window.location.origin,
             id: 'myScope'
           });
+          frame.src = 'child.html#myScope';
         });
 
         it('should send and receive data', function (done) {
@@ -64,6 +68,15 @@
             });
         });
 
+        it('should be ready if it runs a method', function (done) {
+          pmc
+            .run('hello')
+            .then(function () {
+              pmc.ready().should.equal(true);
+              done();
+            });
+        });
+
         it('should support timed out functions', function (done) {
           pmc
             .run('doesNotExist', null, 100)
@@ -81,12 +94,61 @@
 
       });
 
+      describe("Bad postMessageChannel", function() {
+        before(function () {
+          pmc = postMessageChannel({
+            target: window,
+            origin: window.location.origin,
+            id: 'bad123'
+          });
+        });
+
+        it('should not be immediately ready', function (done) {
+          pmc.ready().should.be.equal(false);
+          done();
+        });
+
+        it('should not be ready after some time', function (done) {
+          setTimeout(function () {
+            pmc.ready().should.be.equal(false);
+            done();
+          }, 500);
+        });
+      });
+
+      describe("Second Good postMessageChannel", function() {
+        before(function () {
+          var frame = document.getElementById('childFrame2');
+          pmc = postMessageChannel({
+            target: frame.contentWindow,
+            origin: window.location.origin,
+            id: 'myScope2'
+          });
+          frame.src = 'child.html#myScope2';
+        });
+
+        it('should send and receive data', function (done) {
+          pmc
+            .run('hello', { subject: 'world' })
+            .then(function (data) {
+              data.should.equal('hello, world!');
+              done();
+            });
+        });
+
+        it('should not be ready after a reset', function (done) {
+          pmc.reset();
+          pmc.ready().should.be.equal(false);
+          done();
+        });
+
+      });
+
       mocha.checkLeaks();
       // mocha.globals(['jQuery']);
       if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
       else { mocha.run(); }
     }());
   </script>
-  <iframe id="childFrame" src="child.html" style="width: 1px; height: 1px; position: absolute; top: -1000px; left: -1000px;"></iframe>
 </body>
 </html>

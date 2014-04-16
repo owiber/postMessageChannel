@@ -150,6 +150,7 @@
     var dfds = [];
     var methods = options.methods || {};
     var readyDfd;
+    var isReady = false;
 
     if ( !(options.id && options.origin && options.target) ) {
       throw new Error('id, origin, and target options are required');
@@ -224,7 +225,9 @@
 
     this.reset = function () {
       readyDfd = Deferred();
+      isReady = false;
       readyDfd.promise.then(function () {
+        isReady = true;
         // Send back to frame that said it was ready that we're also ready
         sendMessage(readyMethod);
       });
@@ -240,11 +243,16 @@
 
     this.destroy = function () {
       (window.removeEventListener || window.detachEvent)('message', messageHandler);
+      isReady = false;
       this.run = function () {
         var dfd = Deferred();
         dfd.reject();
         return dfd.promise;
       };
+    };
+
+    this.ready = function () {
+      return isReady;
     };
 
     this.run = function (method, data, timeout) {

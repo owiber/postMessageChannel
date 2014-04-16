@@ -10,9 +10,9 @@
     <script type="text/javascript">
       (function () {
         var pmc = postMessageChannel({
-          target: parent,
+          target: window.parent,
           origin: window.location.origin,
-          id: 'myScope',
+          id: window.location.hash.replace('#', '') || 'myScope',
           methods: {
             hello: function (data) {
               data = data || {};
