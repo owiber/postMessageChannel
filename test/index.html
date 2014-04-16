@@ -70,6 +70,15 @@
             .then(function () {}, done);
         });
 
+        it('should immediately fail when destroyed', function (done) {
+          pmc.destroy();
+          pmc
+            .run('hello')
+            .then(function () {
+              done(new Error('Channel was not destroyed.'));
+            }, done);
+        });
+
       });
 
       mocha.checkLeaks();

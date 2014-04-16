@@ -180,7 +180,7 @@
       targetWindow.postMessage(JSON.stringify(messageData), origin);
     }
 
-    (window.addEventListener || window.attachEvent)('message', function (event) {
+    function messageHandler (event) {
       var message = {};
       try {
         message = JSON.parse(event.data);
@@ -219,7 +219,8 @@
           done(result === context ? undefined : result);
         }
       }
-    });
+    }
+    (window.addEventListener || window.attachEvent)('message', messageHandler);
 
     this.reset = function () {
       readyDfd = Deferred();
@@ -237,6 +238,15 @@
       delete methods[method];
     };
 
+    this.destroy = function () {
+      (window.removeEventListener || window.detachEvent)('message', messageHandler);
+      this.run = function () {
+        var dfd = Deferred();
+        dfd.reject();
+        return dfd.promise;
+      };
+    };
+
     this.run = function (method, data, timeout) {
       var dfdId = dfds.length;
       var dfd = Deferred();
@@ -249,6 +259,7 @@
       }
       return dfd.promise;
     };
+
     this.reset();
     // Broadcast that we're ready if we're a child frame
     if (window.self !== window.top) {
