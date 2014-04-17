@@ -221,8 +221,7 @@
         }
       }
     }
-    (window.addEventListener || window.attachEvent)('message', messageHandler);
-
+    (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', messageHandler);
     this.reset = function () {
       readyDfd = Deferred();
       isReady = false;
@@ -242,7 +241,7 @@
     };
 
     this.destroy = function () {
-      (window.removeEventListener || window.detachEvent)('message', messageHandler);
+      (window.removeEventListener || window.detachEvent)(window.removeEventListener ? 'message' : 'onmessage', messageHandler);
       isReady = false;
       this.run = function () {
         var dfd = Deferred();
