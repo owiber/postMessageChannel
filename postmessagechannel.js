@@ -268,9 +268,14 @@
     };
 
     this.reset();
-    // Broadcast that we're ready if we're a child frame
+    // Broadcast that we're ready if we're a child frame.
+    // Note that we're broadcasting to all origins here.
     if (window.self !== window.top) {
-      sendMessage(readyMethod);
+      targetWindow.postMessage(JSON.stringify({
+        scope: scope,
+        method: readyMethod
+      }), '*');
+
     }
   };
 
