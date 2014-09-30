@@ -2,7 +2,24 @@
 
   var callbackMethod = '__postMessageChannel_callback';
   var readyMethod = '__postMessageChannel_ready';
-  var utils = {};
+  var utils = {
+    eventOn: function (evt, fn, tgt) {
+      var target = tgt || window;
+      if (target.addEventListener) {
+        target.addEventListener(evt, fn, false);
+      } else if (target.attachEvent) {
+        target.attachEvent('on' + evt, fn);
+      }
+    },
+    eventOff: function (evt, fn, tgt) {
+      var target = tgt || window;
+      if (target.removeEventListener) {
+        target.removeEventListener(evt, fn, false);
+      } else if (target.detachEvent) {
+        target.detachEvent('on' + evt, fn);
+      }
+    }
+  };
 
   (function () {
     /** @license MIT - promiscuous library - ©2013 Ruben Verborgh */
@@ -152,13 +169,15 @@
     var readyDfd;
     var isReady = false;
 
-    if ( !(options.id && options.origin && options.target) ) {
-      throw new Error('id, origin, and target options are required');
+    if ( !(options.id && options.origin) ) {
+      throw new Error('id and origin are required');
+    }
+    if ( !(options.target || options.targetFrame) ) {
+      throw new Error('one of either target or targetFrame is required');
     }
 
     var scope = options.id;
     var origin = options.origin;
-    var targetWindow = options.target;
     var internalMethods = {};
     internalMethods[readyMethod] = function (message) {
       readyDfd.resolve(message.data);
@@ -170,6 +189,10 @@
       }
     };
 
+    function targetWindow () {
+      return options.target || options.targetFrame.contentWindow;
+    }
+
     function sendMessage (method, data, dfdId, state) {
       var messageData = {
         scope: scope,
@@ -178,7 +201,7 @@
         method: method,
         state: state
       };
-      targetWindow.postMessage(JSON.stringify(messageData), origin);
+      targetWindow().postMessage(JSON.stringify(messageData), origin);
     }
 
     function messageHandler (event) {
@@ -221,7 +244,7 @@
         }
       }
     }
-    (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', messageHandler);
+    utils.eventOn('message', messageHandler);
     this.reset = function () {
       readyDfd = Deferred();
       isReady = false;
@@ -241,7 +264,7 @@
     };
 
     this.destroy = function () {
-      (window.removeEventListener || window.detachEvent)(window.removeEventListener ? 'message' : 'onmessage', messageHandler);
+      utils.eventOff('message', messageHandler);
       isReady = false;
       this.run = function () {
         var dfd = Deferred();
@@ -271,7 +294,7 @@
     // Broadcast that we're ready if we're a child frame.
     // Note that we're broadcasting to all origins here.
     if (window.self !== window.top) {
-      targetWindow.postMessage(JSON.stringify({
+      targetWindow().postMessage(JSON.stringify({
         scope: scope,
         method: readyMethod
       }), '*');
