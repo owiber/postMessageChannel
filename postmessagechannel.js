@@ -4,19 +4,23 @@
   var readyMethod = '__postMessageChannel_ready';
   var utils = {
     eventOn: function (evt, fn, tgt) {
-      var target = tgt || window;
-      if (target.addEventListener) {
-        target.addEventListener(evt, fn, false);
-      } else if (target.attachEvent) {
-        target.attachEvent('on' + evt, fn);
+      if (evt && typeof fn === 'function') {
+        var target = tgt || window;
+        if (target.addEventListener) {
+          target.addEventListener(evt, fn, false);
+        } else if (target.attachEvent) {
+          target.attachEvent('on' + evt, fn);
+        }
       }
     },
     eventOff: function (evt, fn, tgt) {
-      var target = tgt || window;
-      if (target.removeEventListener) {
-        target.removeEventListener(evt, fn, false);
-      } else if (target.detachEvent) {
-        target.detachEvent('on' + evt, fn);
+      if (evt && typeof fn === 'function') {
+        var target = tgt || window;
+        if (target.removeEventListener) {
+          target.removeEventListener(evt, fn, false);
+        } else if (target.detachEvent) {
+          target.detachEvent('on' + evt, fn);
+        }
       }
     }
   };
