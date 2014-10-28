@@ -1,7 +1,9 @@
 (function (exports) {
 
-  var callbackMethod = '__postMessageChannel_callback';
-  var readyMethod = '__postMessageChannel_ready';
+  var CALLBACK_METHOD = '__postMessageChannel_callback';
+  var READY_METHOD = '__postMessageChannel_ready';
+  var DEBUG_STR = 'debug=1';
+
   var utils = {
     eventOn: function (evt, fn, tgt) {
       if (evt && typeof fn === 'function') {
@@ -183,10 +185,10 @@
     var scope = options.id;
     var origin = options.origin;
     var internalMethods = {};
-    internalMethods[readyMethod] = function (message) {
+    internalMethods[READY_METHOD] = function (message) {
       readyDfd.resolve(message.data);
     };
-    internalMethods[callbackMethod] = function (message) {
+    internalMethods[CALLBACK_METHOD] = function (message) {
       if (message && dfds[message.dfdId]) {
         dfds[message.dfdId][message.state || 'resolve'](message.data);
         delete dfds[message.dfdId];
@@ -194,7 +196,13 @@
     };
 
     function targetWindow () {
-      return options.target || options.targetFrame.contentWindow;
+      return options.target || options.targetFrame.contentWindow || {
+        postMessage: function (message, origin) {
+          if (window.console && window.console.warn && (window.location.search || '').toLowerCase().indexOf(DEBUG_STR) > 0) {
+            console.warn('Warn: Did not send message to target.', message, origin, options);
+          }
+        }
+      };
     }
 
     function sendMessage (method, data, dfdId, state) {
@@ -224,7 +232,7 @@
       else if (message.dfdId !== undefined && methods[message.method]) {
         var asyncDfd;
         var done = function (data, state) {
-          sendMessage(callbackMethod, data, message.dfdId, state);
+          sendMessage(CALLBACK_METHOD, data, message.dfdId, state);
         };
         var context = {
           async: function () {
@@ -255,7 +263,7 @@
       readyDfd.promise.then(function () {
         isReady = true;
         // Send back to frame that said it was ready that we're also ready
-        sendMessage(readyMethod);
+        sendMessage(READY_METHOD);
       });
     };
 
@@ -300,7 +308,7 @@
     if (window.self !== window.top) {
       targetWindow().postMessage(JSON.stringify({
         scope: scope,
-        method: readyMethod
+        method: READY_METHOD
       }), '*');
 
     }
